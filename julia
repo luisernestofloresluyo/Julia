@@ -1,0 +1,21 @@
+using JuMP #libreria para optimizacion combinatoria
+using GLPK  # solver gratuito
+
+sud=Model(GLPK.Optimizer)  #sud es el nombre del modelo
+@variable(sud,x[1:9,1:9,1:9],Bin)
+@objective(sud,Max,0)
+
+for i in 1:9,j in 1:9
+    @constraint(sud,sum(x[i,j,k] for k in 1:9)==1)
+end   # un solo k en la coordenada fija (i,j)
+for i in 1:9,k in 1:9
+    @constraint(sud,sum(x[i,j,k] for j in 1:9)==1)
+end    # un solo k en la iesima fila
+for j in 1:9,k in 1:9
+    @constraint(sud,sum(x[i,j,k] for i in 1:9)==1)
+end   # un solo k en la j esima columna 
+
+
+JuMP.optimize!(sud)
+
+value.(x)
